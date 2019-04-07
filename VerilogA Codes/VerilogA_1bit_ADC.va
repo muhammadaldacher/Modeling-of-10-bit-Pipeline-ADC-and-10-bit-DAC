@@ -1,0 +1,37 @@
+// VerilogA for ADC_Ideal_10bit_Pipeline, VerilogA_1bit_ADC, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module VerilogA_1bit_ADC(dout,vout,vdd,vss,vmin,vmax,vin);
+
+parameter real vtrans=0.5;
+parameter real delay = 0;
+parameter real ttime = 1p;
+
+inout vdd,vss;
+input vin;
+input vmin, vmax;
+output vout,dout;
+
+electrical dout,vout,vdd,vss,vmin,vmax,vin;
+real vref,v_result,d_result;
+
+analog begin
+	
+	vref = (V(vmax) - V(vmin))/2;
+
+	if(V(vin) > vref) begin
+		d_result = V(vdd)/V(vdd);
+		v_result = (V(vin) - vref)*2;
+		end
+	else begin
+		d_result = 0;
+		v_result = (V(vin))*2;
+		end
+
+	V(vout) <+ transition(v_result,delay,ttime);
+	V(dout) <+ transition(d_result,delay,ttime);		
+end
+
+endmodule
